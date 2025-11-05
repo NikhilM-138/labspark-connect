@@ -2,17 +2,30 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 
+// Demo mode flag - set to false when you add real Firebase credentials
+export const DEMO_MODE = true;
+
 // Replace with your Firebase configuration
+// Get these values from: https://console.firebase.google.com/
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "demo-api-key",
+  authDomain: "demo-project.firebaseapp.com",
+  databaseURL: "https://demo-project-default-rtdb.firebaseio.com",
+  projectId: "demo-project",
+  storageBucket: "demo-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef123456"
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const database = getDatabase(app);
+let app;
+let auth;
+let database;
+
+// Only initialize Firebase if not in demo mode
+if (!DEMO_MODE) {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  database = getDatabase(app);
+}
+
+export { auth, database };

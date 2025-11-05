@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { LogOut, Users, CheckCircle, XCircle, Camera } from 'lucide-react';
 import { ref, onValue, set } from 'firebase/database';
-import { database } from '@/lib/firebase';
+import { database, DEMO_MODE } from '@/lib/firebase';
 import { toast } from 'sonner';
 
 interface PendingApproval {
@@ -25,6 +25,11 @@ const AttenderDashboard = () => {
   const [history, setHistory] = useState<any[]>([]);
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      // Demo mode - use local state
+      return;
+    }
+    
     // Load assignment history from Firebase
     const historyRef = ref(database, 'slot_history');
     const unsubscribe = onValue(historyRef, (snapshot) => {
@@ -63,22 +68,30 @@ const AttenderDashboard = () => {
       // Get next available slot based on ascending USN
       const nextSlot = `S${history.length + 1}`;
       
-      await set(ref(database, `sockets/${nextSlot}`), {
-        socket_id: nextSlot,
-        student: studentId,
-        voltage: '0V',
-        current: '0A',
-        temperature: '0°C',
-        status: 'OFF',
-        power: '0W'
-      });
-
-      await set(ref(database, `slot_history/${Date.now()}`), {
+      const newHistory = {
+        id: Date.now().toString(),
         studentId,
         slot: nextSlot,
         timestamp: new Date().toISOString(),
         groupSize
-      });
+      };
+      
+      if (DEMO_MODE) {
+        // Demo mode - update local state
+        setHistory(prev => [...prev, newHistory]);
+      } else {
+        await set(ref(database, `sockets/${nextSlot}`), {
+          socket_id: nextSlot,
+          student: studentId,
+          voltage: '0V',
+          current: '0A',
+          temperature: '0°C',
+          status: 'OFF',
+          power: '0W'
+        });
+
+        await set(ref(database, `slot_history/${Date.now()}`), newHistory);
+      }
 
       toast.success(`Slot ${nextSlot} allocated to ${studentId}`);
     } catch (error) {

@@ -9,7 +9,8 @@ import {
   ExternalLink, LogOut, BarChart3, PowerOff 
 } from 'lucide-react';
 import { ref, onValue, set } from 'firebase/database';
-import { database, auth } from '@/lib/firebase';
+import { database, auth, DEMO_MODE } from '@/lib/firebase';
+import { getAllSockets, updateSocketStatus } from '@/lib/mockData';
 import { toast } from 'sonner';
 
 const FacultyDashboard = () => {
@@ -18,7 +19,19 @@ const FacultyDashboard = () => {
   const [alerts, setAlerts] = useState<any[]>([]);
 
   useEffect(() => {
-    // Listen to all sockets
+    if (DEMO_MODE) {
+      // Use mock data in demo mode
+      setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
+      
+      // Simulate real-time updates
+      const interval = setInterval(() => {
+        setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
+      }, 3000);
+      
+      return () => clearInterval(interval);
+    }
+    
+    // Listen to all sockets from Firebase
     const socketsRef = ref(database, 'sockets');
     const unsubscribe = onValue(socketsRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -37,7 +50,12 @@ const FacultyDashboard = () => {
   const toggleSocket = async (socketId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'ON' ? 'OFF' : 'ON';
     try {
-      await set(ref(database, `sockets/${socketId}/status`), newStatus);
+      if (DEMO_MODE) {
+        updateSocketStatus(socketId, newStatus as 'ON' | 'OFF');
+        setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
+      } else {
+        await set(ref(database, `sockets/${socketId}/status`), newStatus);
+      }
       toast.success(`Socket ${socketId} turned ${newStatus}`);
     } catch (error) {
       toast.error("Failed to toggle socket");
@@ -47,7 +65,14 @@ const FacultyDashboard = () => {
   const disableAllSockets = async () => {
     try {
       for (const socket of sockets) {
-        await set(ref(database, `sockets/${socket.id}/status`), 'OFF');
+        if (DEMO_MODE) {
+          updateSocketStatus(socket.id, 'OFF');
+        } else {
+          await set(ref(database, `sockets/${socket.id}/status`), 'OFF');
+        }
+      }
+      if (DEMO_MODE) {
+        setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
       }
       toast.success("All sockets disabled");
     } catch (error) {
@@ -61,7 +86,9 @@ const FacultyDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await auth.signOut();
+    if (!DEMO_MODE && auth) {
+      await auth.signOut();
+    }
     navigate('/faculty');
   };
 

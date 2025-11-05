@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Zap, Mail, Lock, KeyRound } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, DEMO_MODE } from '@/lib/firebase';
 import { toast } from 'sonner';
 
 const FacultyLogin = () => {
@@ -24,9 +24,15 @@ const FacultyLogin = () => {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
-      toast.success("Login successful!");
-      navigate('/faculty/dashboard');
+      if (DEMO_MODE) {
+        // Demo mode - allow any email/password
+        toast.success("Login successful! (Demo Mode)");
+        navigate('/faculty/dashboard');
+      } else {
+        await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+        toast.success("Login successful!");
+        navigate('/faculty/dashboard');
+      }
     } catch (error: any) {
       toast.error(error.message || "Login failed");
     } finally {
