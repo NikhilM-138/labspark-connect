@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import StudentLogin from "./pages/StudentLogin";
 import StudentDashboard from "./pages/StudentDashboard";
-import FacultyLogin from "./pages/FacultyLogin";
 import FacultyDashboard from "./pages/FacultyDashboard";
 import FacultyStatistics from "./pages/FacultyStatistics";
 import AttenderLogin from "./pages/AttenderLogin";
@@ -25,8 +24,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/student" element={<StudentLogin />} />
           <Route path="/student/dashboard" element={<StudentDashboard />} />
-          <Route path="/faculty" element={<FacultyLogin />} />
-          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          <Route path="/faculty" element={<FacultyDashboard />} />
           <Route path="/faculty/statistics" element={<FacultyStatistics />} />
           <Route path="/attender" element={<AttenderLogin />} />
           <Route path="/attender/dashboard" element={<AttenderDashboard />} />

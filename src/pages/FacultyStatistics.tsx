@@ -11,7 +11,7 @@ const FacultyStatistics = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button onClick={() => navigate('/faculty/dashboard')} variant="outline" size="icon">
+          <Button onClick={() => navigate('/faculty')} variant="outline" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>

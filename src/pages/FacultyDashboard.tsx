@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { 
   Zap, Power, Thermometer, Activity, AlertTriangle, 
-  ExternalLink, LogOut, BarChart3, PowerOff 
+  ExternalLink, LogOut, BarChart3, PowerOff, ArrowLeft 
 } from 'lucide-react';
 import { ref, onValue, set } from 'firebase/database';
 import { database, auth, DEMO_MODE } from '@/lib/firebase';
@@ -97,11 +97,16 @@ const FacultyDashboard = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Faculty Dashboard</h1>
-            <p className="text-muted-foreground">Real-time lab monitoring & control</p>
+          <div className="flex items-center gap-4">
+            <Button onClick={() => navigate('/')} variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Faculty Dashboard</h1>
+              <p className="text-muted-foreground">Real-time lab monitoring & control</p>
+            </div>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <Button onClick={() => navigate('/faculty/statistics')} variant="outline">
               <BarChart3 className="mr-2 h-4 w-4" />
               Statistics
@@ -113,10 +118,6 @@ const FacultyDashboard = () => {
             <Button onClick={disableAllSockets} variant="destructive">
               <PowerOff className="mr-2 h-4 w-4" />
               Disable All
-            </Button>
-            <Button onClick={handleLogout} variant="outline">
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
             </Button>
           </div>
         </div>

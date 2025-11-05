@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { BarcodeScanner } from '@/components/BarcodeScanner';
-import { LogOut, Users, CheckCircle, XCircle, Camera } from 'lucide-react';
+import { LogOut, Users, CheckCircle, XCircle, Camera, ArrowLeft } from 'lucide-react';
 import { ref, onValue, set } from 'firebase/database';
 import { database, DEMO_MODE } from '@/lib/firebase';
 import { toast } from 'sonner';
@@ -108,9 +108,14 @@ const AttenderDashboard = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Attender Dashboard</h1>
-            <p className="text-muted-foreground">Student approval & slot management</p>
+          <div className="flex items-center gap-4">
+            <Button onClick={() => navigate('/attender')} variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Attender Dashboard</h1>
+              <p className="text-muted-foreground">Student approval & slot management</p>
+            </div>
           </div>
           <Button onClick={handleLogout} variant="outline">
             <LogOut className="mr-2 h-4 w-4" />

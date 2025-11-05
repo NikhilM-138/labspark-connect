@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarcodeScanner } from '@/components/BarcodeScanner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Zap, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 const StudentLogin = () => {
@@ -27,6 +28,15 @@ const StudentLogin = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
       <div className="w-full max-w-md space-y-6">
+        <Button
+          onClick={() => navigate('/')}
+          variant="outline"
+          size="sm"
+          className="mb-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Home
+        </Button>
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-4">
             <div className="p-3 rounded-2xl bg-primary/10 animate-pulse-glow">

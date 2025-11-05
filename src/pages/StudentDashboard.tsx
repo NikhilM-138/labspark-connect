@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Zap, Power, Thermometer, Activity, Clock, LogOut } from 'lucide-react';
+import { Zap, Power, Thermometer, Activity, Clock, LogOut, ArrowLeft } from 'lucide-react';
 import { ref, onValue } from 'firebase/database';
 import { database, DEMO_MODE } from '@/lib/firebase';
 import { getSocketData, type SocketData } from '@/lib/mockData';
@@ -74,9 +74,14 @@ const StudentDashboard = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Student Dashboard</h1>
-            <p className="text-muted-foreground">ID: {studentId}</p>
+          <div className="flex items-center gap-4">
+            <Button onClick={() => navigate('/student')} variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Student Dashboard</h1>
+              <p className="text-muted-foreground">ID: {studentId}</p>
+            </div>
           </div>
           <Button onClick={handleLogout} variant="outline">
             <LogOut className="mr-2 h-4 w-4" />
