@@ -18,6 +18,14 @@ import { toast } from 'sonner';
 
 const UnifiedDashboard = () => {
   const navigate = useNavigate();
+
+  // Check authentication
+  useEffect(() => {
+    const isAuthenticated = sessionStorage.getItem('labControlAuth');
+    if (!isAuthenticated) {
+      navigate('/lab-control');
+    }
+  }, [navigate]);
   const [sockets, setSockets] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [showScanner, setShowScanner] = useState(false);
@@ -143,6 +151,12 @@ const UnifiedDashboard = () => {
     toast.info("Opening eWeLink app...");
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('labControlAuth');
+    toast.success("Logged out successfully");
+    navigate('/lab-control');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -169,6 +183,10 @@ const UnifiedDashboard = () => {
             <Button onClick={disableAllSockets} variant="destructive">
               <PowerOff className="mr-2 h-4 w-4" />
               Disable All
+            </Button>
+            <Button onClick={handleLogout} variant="secondary">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Logout
             </Button>
           </div>
         </div>

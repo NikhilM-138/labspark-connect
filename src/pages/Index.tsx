@@ -17,7 +17,7 @@ const Index = () => {
       title: 'Lab Control',
       description: 'Monitor, control sockets & manage student assignments',
       icon: Users,
-      path: '/dashboard',
+      path: '/lab-control',
       gradient: 'from-secondary to-secondary/70'
     }
   ];
