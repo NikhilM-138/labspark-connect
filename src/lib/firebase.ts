@@ -3,9 +3,6 @@ import { getAuth } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 import { getAnalytics } from 'firebase/analytics';
 
-// Demo mode flag - set to false when you add real Firebase credentials
-export const DEMO_MODE = false;
-
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDAza49laIEIU5IQ_acGhfRB8JLTqxhxBA",
