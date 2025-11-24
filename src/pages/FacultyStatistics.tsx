@@ -1,10 +1,59 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Zap, Clock, TrendingUp, Users } from 'lucide-react';
+import { ref, onValue } from 'firebase/database';
+import { database } from '@/lib/firebase';
 
 const FacultyStatistics = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    energyToday: 0,
+    activeSessions: 0,
+    energySaved: 0,
+    totalStudents: 0
+  });
+
+  useEffect(() => {
+    // Listen to statistics from Firebase
+    const statsRef = ref(database, 'statistics');
+    const unsubscribe = onValue(statsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setStats(snapshot.val());
+      }
+    });
+
+    // Count active sessions from sockets
+    const socketsRef = ref(database, 'sockets');
+    const socketsUnsubscribe = onValue(socketsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const activeCount = Object.values(data).filter(
+          (socket: any) => socket.status === 'ON'
+        ).length;
+        setStats(prev => ({ ...prev, activeSessions: activeCount }));
+      }
+    });
+
+    // Count total students from slot history
+    const historyRef = ref(database, 'slot_history');
+    const historyUnsubscribe = onValue(historyRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const uniqueStudents = new Set(
+          Object.values(data).map((entry: any) => entry.studentId)
+        );
+        setStats(prev => ({ ...prev, totalStudents: uniqueStudents.size }));
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      socketsUnsubscribe();
+      historyUnsubscribe();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 md:p-8">
@@ -30,8 +79,8 @@ const FacultyStatistics = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">42.5 kWh</p>
-              <p className="text-sm text-muted-foreground mt-1">↑ 12% from yesterday</p>
+              <p className="text-3xl font-bold">{stats.energyToday.toFixed(1)} kWh</p>
+              <p className="text-sm text-muted-foreground mt-1">Real-time from Firebase</p>
             </CardContent>
           </Card>
 
@@ -43,7 +92,7 @@ const FacultyStatistics = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">8</p>
+              <p className="text-3xl font-bold">{stats.activeSessions}</p>
               <p className="text-sm text-muted-foreground mt-1">Currently in use</p>
             </CardContent>
           </Card>
@@ -56,7 +105,7 @@ const FacultyStatistics = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">18%</p>
+              <p className="text-3xl font-bold">{stats.energySaved}%</p>
               <p className="text-sm text-muted-foreground mt-1">vs. last month</p>
             </CardContent>
           </Card>
@@ -69,7 +118,7 @@ const FacultyStatistics = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">156</p>
+              <p className="text-3xl font-bold">{stats.totalStudents}</p>
               <p className="text-sm text-muted-foreground mt-1">This week</p>
             </CardContent>
           </Card>

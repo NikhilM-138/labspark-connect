@@ -12,8 +12,7 @@ import {
   ExternalLink, BarChart3, PowerOff, ArrowLeft, Camera, Users 
 } from 'lucide-react';
 import { ref, onValue, set } from 'firebase/database';
-import { database, auth, DEMO_MODE } from '@/lib/firebase';
-import { getAllSockets, updateSocketStatus } from '@/lib/mockData';
+import { database } from '@/lib/firebase';
 import { toast } from 'sonner';
 
 const UnifiedDashboard = () => {
@@ -33,14 +32,6 @@ const UnifiedDashboard = () => {
   const [history, setHistory] = useState<any[]>([]);
 
   useEffect(() => {
-    if (DEMO_MODE) {
-      setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
-      const interval = setInterval(() => {
-        setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-    
     // Listen to sockets from Firebase
     const socketsRef = ref(database, 'sockets');
     const unsubscribe = onValue(socketsRef, (snapshot) => {
@@ -91,21 +82,17 @@ const UnifiedDashboard = () => {
         groupSize
       };
       
-      if (DEMO_MODE) {
-        setHistory(prev => [...prev, newHistory]);
-      } else {
-        await set(ref(database, `sockets/${nextSlot}`), {
-          socket_id: nextSlot,
-          student: studentId,
-          voltage: '0V',
-          current: '0A',
-          temperature: '0°C',
-          status: 'OFF',
-          power: '0W'
-        });
+      await set(ref(database, `sockets/${nextSlot}`), {
+        socket_id: nextSlot,
+        student: studentId,
+        voltage: '0V',
+        current: '0A',
+        temperature: '0°C',
+        status: 'OFF',
+        power: '0W'
+      });
 
-        await set(ref(database, `slot_history/${Date.now()}`), newHistory);
-      }
+      await set(ref(database, `slot_history/${Date.now()}`), newHistory);
 
       toast.success(`Slot ${nextSlot} allocated to ${studentId}`);
     } catch (error) {
@@ -116,12 +103,7 @@ const UnifiedDashboard = () => {
   const toggleSocket = async (socketId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'ON' ? 'OFF' : 'ON';
     try {
-      if (DEMO_MODE) {
-        updateSocketStatus(socketId, newStatus as 'ON' | 'OFF');
-        setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
-      } else {
-        await set(ref(database, `sockets/${socketId}/status`), newStatus);
-      }
+      await set(ref(database, `sockets/${socketId}/status`), newStatus);
       toast.success(`Socket ${socketId} turned ${newStatus}`);
     } catch (error) {
       toast.error("Failed to toggle socket");
@@ -131,14 +113,7 @@ const UnifiedDashboard = () => {
   const disableAllSockets = async () => {
     try {
       for (const socket of sockets) {
-        if (DEMO_MODE) {
-          updateSocketStatus(socket.id, 'OFF');
-        } else {
-          await set(ref(database, `sockets/${socket.id}/status`), 'OFF');
-        }
-      }
-      if (DEMO_MODE) {
-        setSockets(getAllSockets().map(s => ({ ...s, id: s.socket_id })));
+        await set(ref(database, `sockets/${socket.id}/status`), 'OFF');
       }
       toast.success("All sockets disabled");
     } catch (error) {

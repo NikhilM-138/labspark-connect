@@ -5,9 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Zap, Power, Thermometer, Activity, Clock, LogOut, ArrowLeft } from 'lucide-react';
 import { ref, onValue } from 'firebase/database';
-import { database, DEMO_MODE } from '@/lib/firebase';
-import { getSocketData, type SocketData } from '@/lib/mockData';
+import { database } from '@/lib/firebase';
 import { toast } from 'sonner';
+
+interface SocketData {
+  socket_id: string;
+  student: string;
+  voltage: string;
+  current: string;
+  temperature: string;
+  status: string;
+  power: string;
+}
 
 const StudentDashboard = () => {
   const location = useLocation();
@@ -27,20 +36,6 @@ const StudentDashboard = () => {
   const [sessionStart, setSessionStart] = useState(new Date());
 
   useEffect(() => {
-    if (DEMO_MODE) {
-      // Use mock data in demo mode
-      const mockData = getSocketData('S1');
-      setSocketData({ ...mockData, student: studentId });
-      
-      // Simulate real-time updates
-      const interval = setInterval(() => {
-        const updated = getSocketData('S1');
-        setSocketData({ ...updated, student: studentId });
-      }, 3000);
-      
-      return () => clearInterval(interval);
-    }
-    
     // Listen to real-time socket data from Firebase
     const socketRef = ref(database, `sockets/${socketData.socket_id}`);
     
