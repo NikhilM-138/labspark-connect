@@ -12,13 +12,16 @@ const StudentLogin = () => {
 
   const handleScan = async (studentId: string) => {
     try {
-      // Here you would validate the student and send to attender for approval
-      toast.success(`Student ID ${studentId} scanned! Waiting for approval...`);
+      // Validate student ID starts with "4NI"
+      if (!studentId.startsWith('4NI')) {
+        toast.error("Invalid student ID! Must start with '4NI'");
+        setShowScanner(false);
+        setTimeout(() => setShowScanner(true), 1000);
+        return;
+      }
       
-      // Simulate approval process - in real app, this would be handled by attender
-      setTimeout(() => {
-        navigate('/student/dashboard', { state: { studentId } });
-      }, 2000);
+      toast.success(`Student ID ${studentId} validated! Redirecting to dashboard...`);
+      navigate('/student/dashboard', { state: { studentId } });
     } catch (error) {
       toast.error("Failed to process student ID");
       console.error(error);
@@ -71,7 +74,12 @@ const StudentLogin = () => {
             </CardContent>
           </Card>
         ) : (
-          <BarcodeScanner onScan={handleScan} onClose={() => setShowScanner(false)} />
+          <BarcodeScanner 
+            onScan={handleScan} 
+            onClose={() => setShowScanner(false)}
+            autoStart={true}
+            validatePrefix="4NI"
+          />
         )}
       </div>
     </div>

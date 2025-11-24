@@ -8,11 +8,20 @@ import { toast } from 'sonner';
 interface BarcodeScannerProps {
   onScan: (data: string) => void;
   onClose?: () => void;
+  autoStart?: boolean;
+  validatePrefix?: string;
 }
 
-export const BarcodeScanner = ({ onScan, onClose }: BarcodeScannerProps) => {
-  const [scanning, setScanning] = useState(false);
+export const BarcodeScanner = ({ onScan, onClose, autoStart = false, validatePrefix }: BarcodeScannerProps) => {
+  const [scanning, setScanning] = useState(autoStart);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+
+  // Auto-start camera if autoStart is enabled
+  useEffect(() => {
+    if (autoStart) {
+      startScanning();
+    }
+  }, [autoStart]);
 
   useEffect(() => {
     if (scanning) {
@@ -27,6 +36,11 @@ export const BarcodeScanner = ({ onScan, onClose }: BarcodeScannerProps) => {
       
       scannerRef.current.render(
         (decodedText) => {
+          // Validate prefix if specified
+          if (validatePrefix && !decodedText.startsWith(validatePrefix)) {
+            toast.error(`Invalid barcode! Must start with ${validatePrefix}`);
+            return;
+          }
           toast.success("Barcode scanned successfully!");
           onScan(decodedText);
           stopScanning();
