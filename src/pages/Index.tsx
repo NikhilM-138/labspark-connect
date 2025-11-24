@@ -14,18 +14,11 @@ const Index = () => {
       gradient: 'from-primary to-primary/70'
     },
     {
-      title: 'Faculty',
-      description: 'Monitor and control lab sockets in real-time',
+      title: 'Lab Control',
+      description: 'Monitor, control sockets & manage student assignments',
       icon: Users,
-      path: '/faculty',
+      path: '/dashboard',
       gradient: 'from-secondary to-secondary/70'
-    },
-    {
-      title: 'Attender',
-      description: 'Manage student approvals and slot assignments',
-      icon: UserCog,
-      path: '/attender',
-      gradient: 'from-accent to-accent/70'
     }
   ];
 
@@ -46,7 +39,7 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {roles.map((role) => {
             const Icon = role.icon;
             return (
